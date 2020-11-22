@@ -11,6 +11,7 @@
 library(tidyverse)
 library(countrycode)
 library(rvest)
+library(git2r)
 
 # Source Helper Functions --------------------------------------------------------
 source("functions.R")
@@ -57,3 +58,16 @@ data <- nested_data %>%
 if(!dir.exists('data')) dir.create('data')
 readr::write_csv(data, 'data/cdr-covid19-cases.csv')
 if(!file.exists('data/country-data.csv')) readr::write_csv(scrape_data(), 'data/country-data.csv')
+
+cred <- cred_ssh_key('~/.ssh/id_rsa.pub', '~/.ssh/id_rsa')
+# Configure git.
+git2r::config(user.name = "primaj",user.email = "johnprimavesi@gmail.com")
+
+# Check git status.
+status()
+
+# Add and commit changes. 
+add(path = '.')
+commit(message = glue::glue("Update Data - Max Date: {max(data$date)}"))
+
+system("git push origin")
